@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown On Repeat</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+      font-family: 'Arial', sans-serif;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #countDisplay {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <p id="countDisplay"></p>
+  <button id="playButton">Begin Countdown</button>
+
+  <script>
+    const playButton = document.getElementById('playButton');
+    const countDisplay = document.getElementById('countDisplay');
+    let count = 1;
+    let interval;
+    let speechSynthesis;
+    let isPlaying = false;
+
+    playButton.addEventListener('click', () => {
+      if (isPlaying) {
+        stopAudio();
+        resetCounter();
+        startAudio();
+      } else {
+        startAudio();
+      }
+    });
+
+    function startAudio() {
+      stopAudio(); 
+      isPlaying = true;
+      speechSynthesis = window.speechSynthesis;
+
+      count = 1;
+      countDisplay.innerText = count;
+      speakNextNumber();
+
+      interval = setInterval(() => {
+        count++;
+        if (count <= 6) {
+          countDisplay.innerText = count;
+          speakNextNumber();
+        } else {
+          stopAudio();
+          resetCounter();
+        }
+      }, 1000);
+    }
+
+    function speakNextNumber() {
+      const utterance = new SpeechSynthesisUtterance(count.toString());
+      utterance.rate = 1.5;
+      speechSynthesis.speak(utterance);
+    }
+
+    function pauseAudio() {
+      clearInterval(interval);
+      if (speechSynthesis) {
+        speechSynthesis.pause();
+        isPlaying = false;
+      }
+    }
+
+    function stopAudio() {
+      clearInterval(interval);
+      if (speechSynthesis) {
+        speechSynthesis.cancel();
+        isPlaying = false;
+      }
+    }
+
+    function resetCounter() {
+      count = 1;
+      countDisplay.innerText = '';
+    }
+  </script>
+</body>
+</html>
